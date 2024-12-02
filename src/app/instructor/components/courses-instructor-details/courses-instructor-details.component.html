@@ -1,0 +1,530 @@
+<nav>
+    <ul>
+      <li [ngClass]="{'active': selectedTab === 'Course'}">
+        <a (click)="selectTab('Course')">Course</a>
+      </li>
+      <li [ngClass]="{'active': selectedTab === 'Users'}">
+        <a (click)="selectTab('Users')">Users</a>
+      </li>
+      <li [ngClass]="{'active': selectedTab === 'Review'}">
+        <a (click)="selectTab('Review')">Review</a>
+      </li>
+      <li [ngClass]="{'active': selectedTab === 'Questions'}">
+        <a (click)="selectTab('Questions')">Questions</a>
+      </li>
+    </ul>
+  </nav>
+  
+  <div class="content">
+    <div *ngIf="selectedTab === 'Course'">
+        <div class="row">
+            <!-- Vidéo Section -->
+            <div class="col-md-8" *ngIf="existeVedio && !selectedPdf && !selectedQuiz">
+                <video class="w-100" controls [src]="'http://localhost:8080/instructor/videos/' + selectedVideo?.videoUrl"></video>
+                <p class="mt-2"><span class="fw-bold">Description de Vidéo :</span> {{ selectedVideo?.description }}</p>
+            </div>
+            
+            <!-- Message d'absence de vidéo -->
+            <div class="col-md-8 bg-danger" *ngIf="!existeVedio && selectedLesson && !selectedPdf">
+                <p class="text-center fw-bold mt-5 fs-4">No video exists for this lesson.</p>
+                <p><span class="fw-bold">Description de la Leçon :</span>{{ selectedLesson?.description }}</p>
+            </div>
+            
+            <!-- PDF Section -->
+            <div class="col-md-8" *ngIf="selectedPdf">
+                <p class="text-center fw-bold mt-5 fs-4">PDF: {{ selectedPdf?.title }}</p>
+                <a class="btn btn-primary mt-2" [href]="'http://localhost:8080/instructor/pdfs/' + selectedPdf?.pdfUrl" download>
+                    Télécharger le PDF
+                </a>
+                <p class="mt-2"><span class="fw-bold">Description du PDF :</span> {{ selectedPdf?.description }}</p>
+            </div>
+            <div class="col-md-8" *ngIf="selectedQuiz">
+              <p class="text-center fw-bold mt-5 fs-4">quiz: {{ selectedQuiz?.title }}</p>
+        
+              <p class="mt-2"><span class="fw-bold">Description du quiz :</span> {{ selectedQuiz?.description }}</p>
+              <table style="width: 82%; margin:auto" class="text-center" *ngFor="let x of selectedQuiz.questions ;let i =index">
+                  <tr>
+                    <th>
+                      question {{i+1}}
+                    </th>
+                    <td>
+                      {{x.questionText}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>
+                      correctAnswer
+                    </th>
+                    <td>
+                      {{x.correctAnswer}}
+                    </td>
+                  </tr>
+                  <tr *ngFor="let y of x.options ; let i=index">
+                    <th>
+                      option {{i+1}}
+                    </th>
+                    <td>
+                      {{y}}
+                    </td>
+                  </tr>
+              </table>
+          </div>
+            <!-- Liste des leçons -->
+            <div class="col-md-4">
+                <button class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#ajouterLesson">Add Lesson</button>
+                <mat-accordion>
+                    <mat-expansion-panel class="mb-1" *ngFor="let lesson of lessons; let i = index" (opened)="onLessonSelect(lesson)">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                Lesson {{ i + 1 }}: {{ lesson.title }}
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                <button mat-icon-button [matMenuTriggerFor]="mainMenu" (click)="onAClick($event)">
+                                    <mat-icon>more_vert</mat-icon>
+                                </button>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        
+                        <!-- Menu principal -->
+                        <mat-menu #mainMenu="matMenu">
+                            <button mat-menu-item (click)="onUpdateClick(lesson)" data-bs-toggle="modal" data-bs-target="#updateLesson">
+                                <mat-icon>edit</mat-icon> Update
+                            </button>
+                            <button mat-menu-item (click)="onDeleteClick(lesson)">
+                                <mat-icon>delete</mat-icon> Delete
+                            </button>
+                            <button mat-menu-item (click)="onAddClick($event)" [matMenuTriggerFor]="addMenu">
+                                <mat-icon>add</mat-icon> Add
+                            </button>
+                        </mat-menu>
+                        
+                        <!-- Menu d'ajout -->
+                        <mat-menu #addMenu="matMenu">
+                            <button mat-menu-item (click)="onAddVideoClick(lesson.id)" data-bs-toggle="modal" data-bs-target="#videoModal">
+                                Add Video
+                            </button>
+                            <button mat-menu-item (click)="onAddQuizClick(lesson.id)" data-bs-toggle="modal" data-bs-target="#quizModal" >
+                                Add Quiz
+                            </button>
+                            <button mat-menu-item (click)="onAddPdfClick(lesson.id)" data-bs-toggle="modal" data-bs-target="#pdfModal">
+                                Add PDF
+                            </button>
+                        </mat-menu>
+                        
+                        <!-- Liste des vidéos -->
+                        <mat-list *ngIf="lesson.videos.length">
+                            <mat-list-item class="my-2" *ngFor="let video of lesson.videos; let i = index" style="border: 2px solid black;" (click)="onVideoSelect(video, lesson)">
+                                <div class="pt-2">
+                                    <h4 matLine class="text-black">{{i + 1}} : {{ video.title }}
+                                        <button (click)="onAClick($event)" (click)="updateVedio(video)" class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#videoUpdateModal">update</button>
+                                        <button (click)="onAClick($event)" (click)="deleteVedio(video)" class="btn btn-danger m-2">delete</button>
+                                    </h4>
+                                </div>
+                            </mat-list-item>
+                        </mat-list>
+                        
+                        <!-- Liste des PDFs -->
+                        <mat-list *ngIf="lesson.pdfs.length">
+                            <mat-list-item class="my-2" *ngFor="let pdf of lesson.pdfs; let i = index" style="border: 2px solid black;" (click)="onPdfSelect(pdf, lesson)">
+                                <div class="pt-2">
+                                    <h4 matLine class="text-black">{{i + 1}} : {{ pdf.title }}
+                                        <button (click)="onAClick($event)" (click)="updatePdf(pdf)" data-bs-toggle="modal" data-bs-target="#pdfUpdateModal" class="btn btn-success m-2">update</button>
+                                        <button (click)="onAClick($event)" (click)="deletePdf(pdf)" class="btn btn-danger m-2">delete</button>
+                                    </h4>
+                                </div>
+                            </mat-list-item>
+                        </mat-list>
+                        <mat-list *ngIf="lesson.quiz">
+                          <mat-list-item class="my-2"  style="border: 2px solid black;" (click)="onQuizSelect(lesson.quiz, lesson)">
+                              <div class="pt-2">
+                                  <h4 matLine class="text-black">{{i + 1}} : {{ lesson.quiz.title }}
+                                      <button (click)="onAClick($event)" (click)="updateQuiz(lesson.quiz)" data-bs-toggle="modal" data-bs-target="#quizUpdateModal" class="btn btn-success m-2">update</button>
+                                      <button (click)="onAClick($event)" (click)="deleteQuiz(lesson.quiz)" class="btn btn-danger m-2">delete</button>
+                                  </h4>
+                              </div>
+                          </mat-list-item>
+                      </mat-list>
+                        <!-- Message si aucune vidéo ou PDF n'est présent -->
+                        <mat-list *ngIf="!lesson.videos.length && !lesson.pdfs.length && !selectedQuiz">
+                            <mat-list-item>
+                                <h4 matLine class="text-danger" style="border: 2px solid red; width:100%">No video or PDF exists for this lesson</h4>
+                            </mat-list-item>
+                        </mat-list>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Autres onglets -->
+    <div *ngIf="selectedTab === 'Users'">
+        <p>Users</p>
+    </div>
+    <div *ngIf="selectedTab === 'Review'">
+        <p>Review</p>
+    </div>
+    <div *ngIf="selectedTab === 'Questions'">
+        <p>Questions</p>
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="ajouterLesson" tabindex="-1" aria-labelledby="ajouterLessonLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="ajouterLessonLabel">Add Lesson</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="lessonForm">
+          <div class="mb-3">
+            <label for="lessonTitle" class="form-label">Title</label>
+            <input type="text" class="form-control" id="lessonTitle" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="lessonDescription" class="form-label">Description</label>
+            <textarea class="form-control" id="lessonDescription" name="description" rows="3" required></textarea>
+          </div>
+          <!-- Add any additional fields here -->
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="saveLesson()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal HTML -->
+<div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="videoModalLabel">Add Video</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="onSubmit()" #videoForm="ngForm">
+          <div class="mb-3">
+            <label for="videoTitle" class="form-label">Video Title</label>
+            <input type="text" id="videoTitle" class="form-control" [(ngModel)]="video.title" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="videoDescription" class="form-label">Description</label>
+            <textarea id="videoDescription" class="form-control" [(ngModel)]="video.description" name="description" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="videoFile" class="form-label">Select Video File</label>
+            <input type="file" id="videoFile" class="form-control" (change)="onFileChange($event)" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="videoUpdateModal" tabindex="-1" aria-labelledby="videoUpdateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="videoUpdateModalLabel">update Video</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="OnupdateVedio()" #videoForm="ngForm">
+          <div class="mb-3">
+            <label for="videoTitle" class="form-label">Video Title</label>
+            <input type="text" id="videoTitleupdate" class="form-control" [(ngModel)]="video.title" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="videoDescription" class="form-label">Description</label>
+            <textarea id="videoDescriptionupdate" class="form-control" [(ngModel)]="video.description" name="description" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="videoFile" class="form-label">Select Video File</label>
+            <input type="file" id="videoFile" class="form-control" (change)="onFileChange($event)" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal HTML -->
+<div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pdfModalLabel">Add pdf</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="onSubmitPdf()" #pdfForm="ngForm">
+          <div class="mb-3">
+            <label for="pdfTitle" class="form-label">pdf Title</label>
+            <input type="text" id="pdfTitle" class="form-control" [(ngModel)]="pdf.title" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="pdfDescription" class="form-label">Description</label>
+            <textarea id="pdfDescription" class="form-control" [(ngModel)]="pdf.description" name="description" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="pdfFile" class="form-label">Select pdf File</label>
+            <input type="file" id="pdfFile" class="form-control" (change)="onFileChange($event)" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="pdfUpdateModal" tabindex="-1" aria-labelledby="pdfUpdateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pdfUpdateModalLabel">update pdf</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="onUpdatePdf()" #pdfForm="ngForm">
+          <div class="mb-3">
+            <label for="pdfTitle" class="form-label">pdf Title</label>
+            <input type="text" id="pdfTitleupdate" class="form-control" [(ngModel)]="pdf.title" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="pdfDescription" class="form-label">Description</label>
+            <textarea id="pdfDescriptionupdate" class="form-control" [(ngModel)]="pdf.description" name="description" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="pdfFile" class="form-label">Select pdf File</label>
+            <input type="file" id="pdfFile" class="form-control" (change)="onFileChange($event)" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal HTML -->
+<div class="modal fade" id="quizModal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="quizModalLabel">Add quiz</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <h2>Ajouter un nouveau quiz</h2>
+          <form [formGroup]="quizForm" (ngSubmit)="addQuiz()">
+            <div class="mb-3">
+              <label for="title" class="form-label">Titre du Quiz</label>
+              <input
+                type="text"
+                id="title"
+                formControlName="title"
+                class="form-control"
+                placeholder="Entrer le titre du quiz"
+              />
+            </div>
+        
+            <div class="mb-3">
+              <label for="description" class="form-label">Description du Quiz</label>
+              <textarea
+                id="description"
+                formControlName="description"
+                class="form-control"
+                placeholder="Entrer la description du quiz"
+              ></textarea>
+            </div>
+        
+            <div class="mb-3">
+              <label for="questionCount" class="form-label">Nombre de Questions</label>
+              <input
+                type="number"
+                id="questionCount"
+                formControlName="questionCount"
+                class="form-control"
+                min="1"
+                (change)="onQuestionCountChange()"
+              />
+            </div>
+        
+            <div formArrayName="questions">
+              <div *ngFor="let question of getQuestionsControls(); let i = index" [formGroupName]="i" class="card mb-3">
+                <div class="card-header">
+                  <h5>Question {{ i + 1 }}</h5>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label class="form-label">Texte de la Question</label>
+                    <input
+                      type="text"
+                      formControlName="questionText"
+                      class="form-control"
+                      placeholder="Entrer le texte de la question"
+                    />
+                  </div>
+        
+                  <div formArrayName="options">
+                    <div *ngFor="let option of getOptionsControls(i); let j = index" class="mb-3">
+                      <label class="form-label">Option {{ j + 1 }}</label>
+                      <input
+                        type="text"
+                        [formControlName]="j"
+                        class="form-control"
+                        placeholder="Entrer l'option {{ j + 1 }}"
+                      />
+                    </div>
+                  </div>
+        
+                  <div class="mb-3">
+                    <label class="form-label">Réponse Correcte</label>
+                    <input
+                      type="text"
+                      formControlName="correctAnswer"
+                      class="form-control"
+                      placeholder="Entrer la réponse correcte"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+        
+            <button type="submit" class="btn btn-primary">Ajouter Quiz</button>
+          </form>
+        </div>
+        
+        
+        
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="quizUpdateModal" tabindex="-1" aria-labelledby="quizUpdateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="quizUpdateModalLabel"> quiz</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <h2>Update  quiz</h2>
+          <form [formGroup]="quizForm" (ngSubmit)="onUpdateQuiz()">
+            <div class="mb-3">
+              <label for="title" class="form-label">Titre du Quiz</label>
+              <input
+                type="text"
+                id="title"
+                formControlName="title"
+                class="form-control"
+                placeholder="Entrer le titre du quiz"
+              />
+            </div>
+        
+            <div class="mb-3">
+              <label for="description" class="form-label">Description du Quiz</label>
+              <textarea
+                id="description"
+                formControlName="description"
+                class="form-control"
+                placeholder="Entrer la description du quiz"
+              ></textarea>
+            </div>
+        
+            <div class="mb-3">
+              <label for="questionCount" class="form-label">Nombre de Questions</label>
+              <input
+                type="number"
+                id="questionCount"
+                formControlName="questionCount"
+                class="form-control"
+                min="1"
+                (change)="onQuestionCountChange()"
+              />
+            </div>
+        
+            <div formArrayName="questions">
+              <div *ngFor="let question of getQuestionsControls(); let i = index" [formGroupName]="i" class="card mb-3">
+                <div class="card-header">
+                  <h5>Question {{ i + 1 }}</h5>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label class="form-label">Texte de la Question</label>
+                    <input
+                      type="text"
+                      formControlName="questionText"
+                      class="form-control"
+                      placeholder="Entrer le texte de la question"
+                    />
+                  </div>
+        
+                  <div formArrayName="options">
+                    <div *ngFor="let option of getOptionsControls(i); let j = index" class="mb-3">
+                      <label class="form-label">Option {{ j + 1 }}</label>
+                      <input
+                        type="text"
+                        [formControlName]="j"
+                        class="form-control"
+                        placeholder="Entrer l'option {{ j + 1 }}"
+                      />
+                    </div>
+                  </div>
+        
+                  <div class="mb-3">
+                    <label class="form-label">Réponse Correcte</label>
+                    <input
+                      type="text"
+                      formControlName="correctAnswer"
+                      class="form-control"
+                      placeholder="Entrer la réponse correcte"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+        
+            <button type="submit" class="btn btn-primary">Ajouter Quiz</button>
+          </form>
+        </div>
+        
+        
+        
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="updateLesson" tabindex="-1" aria-labelledby="updateLessonLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="updateLessonLabel">update Lesson</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="lessonForm">
+          <div class="mb-3">
+            <label for="lessonTitle" class="form-label">Title</label>
+            <input type="text" class="form-control" id="lessonTitleupdate" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="lessonDescription" class="form-label">Description</label>
+            <textarea class="form-control" id="lessonDescriptionupdate" name="description" rows="3" required></textarea>
+          </div>
+          <!-- Add any additional fields here -->
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="updateLesson()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>

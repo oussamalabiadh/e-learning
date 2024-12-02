@@ -1,0 +1,79 @@
+<section class="bg-danger h-25 d-flex justify-content-center align-items-center" *ngIf="!subcategoryCount">
+    <p class=" fw-bold fs-4">Aucun subCategory trouver pour cette Category</p>
+</section>
+<section *ngIf="subcategoryCount">
+    <h3 class="fw-bold fs-4 text-info">Subcategory Details</h3>
+    <p>Total Subcategories: {{ subcategoryCount }}</p>
+    
+    <mat-table [dataSource]="subcategoryDataSource" class="mat-elevation-z8">
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+      </ng-container>
+    
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+      </ng-container>
+    
+      <!-- Image Column -->
+      <ng-container matColumnDef="image">
+        <mat-header-cell *matHeaderCellDef> Image </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <img [src]="'data:image/jpeg;base64,' + element.imageUrl" alt="Image" height="80" width="100">
+        </mat-cell>
+      </ng-container>
+    
+      <!-- Number of Courses Column -->
+      <ng-container matColumnDef="numberOfCourses">
+        <mat-header-cell *matHeaderCellDef> Number of Courses </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.numberOfCourses}} </mat-cell>
+      </ng-container>
+    
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <button class="btn btn-warning"   (click)="viewSubCategory(element)"><i class="fa-solid fa-eye"></i></button>
+          <button  class="btn btn-success mx-2" (click)="openUpdateModal(element)" data-bs-toggle="modal" data-bs-target="#updateModal"><i class="fa-solid fa-pen-to-square"></i></button>
+          <button  class="btn btn-danger" (click)="deleteSubCategory(element)"><i class="fa-solid fa-trash-can"></i></button>
+        </mat-cell>
+      </ng-container>
+    
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+    
+    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+
+    
+    <!-- Update Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updateModalLabel">Update  SUBCategory</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="updateCategoryForm" (ngSubmit)="onUpdate()">
+          <div class="mb-3">
+            <label for="categoryName" class="form-label">Name</label>
+            <input type="text" id="categoryName" formControlName="name" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label for="categoryImage" class="form-label">Image URL</label>
+            <img *ngIf="selectedCategory" class="w-25" [src]="'data:image/jpeg;base64,' + selectedCategory.imageUrl" alt="">
+            <input type="file" id="categoryImage" (change)="onFileChange($event)" class="form-control" />
+          </div>
+          
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+    </section>
+

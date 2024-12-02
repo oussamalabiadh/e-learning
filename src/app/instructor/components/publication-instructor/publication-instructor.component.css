@@ -1,0 +1,19 @@
+.publication-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .publication-card img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .publication-card video {
+    width: 100%;
+  }
+  
+  .publication-card .likes, .publication-card .comments {
+    margin-top: 10px;
+  }
+  

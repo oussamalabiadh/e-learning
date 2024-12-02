@@ -1,0 +1,5 @@
+.category{
+    height: 100vh;
+    overflow: scroll;
+    border-right: 5px solid black;
+}

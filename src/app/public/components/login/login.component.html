@@ -1,0 +1,82 @@
+<div class="container">
+    <div class="section-authentication-cover">
+      <div class="">
+        <div class="row g-0">
+          <div class="col-12 col-xl-7 col-xxl-8 auth-cover-left align-items-center justify-content-center d-none d-xl-flex">
+            <div class="shadow-none bg-transparent shadow-none rounded-0 mb-0">
+              <div class="card-body">
+                <img src="assets/login.PNG" class="auth-img-cover-login" width="600" alt="" />
+              </div>
+            </div>
+          </div>
+  
+          <div class="col-12 col-xl-5 col-xxl-4 auth-cover-right align-items-center justify-content-center">
+            <div class="card rounded-0 m-3 shadow-none bg-transparent mb-0">
+              <div class="card-body p-sm-5">
+                <div class="">
+                  <div class="mb-3 text-center">
+                    <img src="assets/logo.png" width="200" alt="" />
+                  </div>
+                  <div class="text-center mb-4">
+                    <p class="mb-0">Please log in to your account</p>
+                  </div>
+                  <div class="form-body">
+                    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="row g-3">
+                      <div class="col-12">
+                        <label for="inputEmailAddress" class="form-label">Email Address</label>
+                        <input
+                          type="email"
+                          class="form-control"
+                          id="inputEmailAddress"
+                          formControlName="userEmail"
+                          placeholder="example@user.com"
+                        />
+                        <div *ngIf="loginForm.get('userEmail')?.touched && loginForm.get('userEmail')?.invalid" class="text-danger">
+                          <small *ngIf="loginForm.get('userEmail')?.errors?.['required']">Email is required.</small>
+                          <small *ngIf="loginForm.get('userEmail')?.errors?.['email']">Please enter a valid email address.</small>
+                        </div>
+                      </div>
+                  
+                      <div class="col-12">
+                        <label for="inputChoosePassword" class="form-label">Password</label>
+                        <div class="input-group">
+                          <input
+                            [type]="showPassword ? 'text' : 'password'"
+                            class="form-control"
+                            id="inputChoosePassword"
+                            formControlName="userPassword"
+                            placeholder="Enter Password"
+                          />
+                          <div class="input-group-text bg-transparent" (click)="togglePasswordVisibility()">
+                            <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                          </div>
+                        </div>
+                        <div *ngIf="loginForm.get('userPassword')?.touched && loginForm.get('userPassword')?.invalid" class="text-danger">
+                          <small *ngIf="loginForm.get('userPassword')?.errors?.['required']">Password is required.</small>
+                          <small *ngIf="loginForm.get('userPassword')?.errors?.['minlength']">Password must be at least 8 characters long.</small>
+                        </div>
+                      </div>
+
+                      <div class="col-12">
+                        <div class="d-grid">
+                          <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid ">Sign in</button>
+                        </div>
+                      </div>
+                  
+                      <div class="col-12">
+                        <div class="text-center ">
+                            <p class="mb-0">Don't have an account yet? <a routerLink="/public/register">Sign up here</a>
+                            </p>
+                        </div>
+                    </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

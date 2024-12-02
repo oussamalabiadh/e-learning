@@ -1,0 +1,12 @@
+.card img{
+    margin: auto;
+    margin-top: 10px;
+    height:200px;
+    width: 70%;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+
+}

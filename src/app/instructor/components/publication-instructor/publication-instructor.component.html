@@ -1,0 +1,124 @@
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+    Ajouter publication
+  </button>
+  <div *ngFor="let pub of publication" class="publication-card w-50 mx-auto">
+    <!-- Menu Icon -->
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="updatePublication(pub)" >Update</button>
+      <button mat-menu-item (click)="deletePublication(pub)">Delete</button>
+    </mat-menu>
+  
+  
+    <div class="head d-flex" *ngIf="instructor">
+        <img  [src]="getImageSrc(instructor.imageprofile)" style="height: 50px ;width:50px ;" class="rounded-5" alt="">
+        <h4 class="pt-3 ms-3 fw-bold">{{instructor.userName}}</h4>
+    </div>
+  <div class="d-flex justify-content-between" >
+    <div>
+    <h3>{{ pub.description }}</h3>
+    <p class="small">Date Published: {{ pub.datePublished | date:'short' }}</p>
+</div>
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+  </div>
+    <div *ngIf="pub.objectType === 'image'">
+      <img class="w-100" [src]="getImageSrc(pub.objectData)" alt="Publication Image" />
+    </div>
+  
+    <div *ngIf="pub.objectType === 'video'">
+      <video controls [src]="'http://localhost:8080/instructor/videos/'+pub.objectUrl"></video>
+    </div>
+  
+    <div *ngIf="pub.objectType === 'pdf'">
+      <a [href]="getPdfDownloadLink(pub.objectData)" download="publication.pdf">Download PDF</a>
+    </div>
+    <div class="state">
+        <button class="btn" [ngClass]="{
+            'btn-warning': pub.status === 'pending',
+            'btn-success': pub.status === 'approved',
+            'btn-danger': pub.status === 'rejected'
+        }">
+            {{ pub.status }}
+        </button>
+    </div>
+    
+  
+    <div class="likes">
+      <h4>Likes:</h4>
+      <ul>
+        <li *ngFor="let like of pub.likes">{{ like.username }}</li>
+      </ul>
+    </div>
+  
+    <div class="comments">
+      <h4>Comments:</h4>
+      <ul>
+        <li *ngFor="let comment of pub.comments">
+          <strong>{{ comment.username }}:</strong> {{ comment.text }} <br>
+          <small>{{ comment.date | date:'short' }}</small>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Ajouter publication</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="publicationForm" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                  <label for="description">Description:</label>
+                  <textarea id="description" formControlName="description" class="form-control" rows="3"></textarea>
+                </div>
+              
+                <div class="form-group">
+                  <label for="objectType">Object Type:</label>
+                  <select id="objectType" formControlName="objectType" class="form-control" (change)="onObjectTypeChange($event)">
+                    <option value="image">Image</option>
+                    <option value="pdf">PDF</option>
+                    <option value="video">Video</option>
+                  </select>
+                </div>
+              
+                <div class="form-group" *ngIf="fileUploadVisible">
+                  <label for="file">Upload File:</label>
+                  <input id="file" type="file" (change)="onFileSelected($event)" class="form-control" />
+                </div>
+              
+                <button type="submit" class="btn btn-primary" [disabled]="publicationForm.invalid">Submit</button>
+              </form>
+              
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,21 @@
+<div class="controls">
+    <button (click)="createRoom()">Create Room</button>
+  </div>
+  
+  <div class="video-container">
+    <div class="video-box">
+      <button (click)="toggleMyVideo()">Toggle My Video</button>
+      <div *ngIf="showMyVideo">
+        <h3>My Video</h3>
+        <video #myVideo autoplay muted></video>
+      </div>
+    </div>
+    <div class="video-box">
+      <button (click)="toggleRemoteVideo()">Toggle Remote Video</button>
+      <div *ngIf="showRemoteVideo">
+        <h3>Remote Video</h3>
+        <video #remoteVideo autoplay></video>
+      </div>
+    </div>
+  </div>
+  

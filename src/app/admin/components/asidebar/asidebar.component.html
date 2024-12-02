@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- BOX ICONS CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Font Awesome CSS (if you need it) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body id="body">
+    <div class="l-navbar" id="navbar">
+        <nav class="nav">
+            <div>
+              <a routerLink="/" class="nav__logo">
+                <img src="../../../../assets/logo.png" alt="" class="nav__logo-icon">
+              </a>
+          
+              <div class="nav__toggle" id="nav-toggle">
+                <i class='bx bx-chevron-right'></i>
+              </div>
+          
+              <ul class="nav__list">
+                <a routerLink="/admin/home" class="nav__link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                  <i class='bx bx-grid-alt nav__icon'></i>
+                  <span class="nav__text">Home</span>
+                </a>
+                <a routerLink="/admin/category-management" class="nav__link" routerLinkActive="active">
+                  <i class="fa-solid fa-layer-group nav__icon"></i>
+                  <span class="nav__text">Category Management</span>
+                </a>
+                <a routerLink="/admin/course-management" class="nav__link" routerLinkActive="active">
+                  <i class="fa-solid fa-clapperboard nav__icon"></i>
+                  <span class="nav__text">Course Management</span>
+                </a>
+                <a routerLink="/admin/instructor-management" class="nav__link" routerLinkActive="active">
+                  <i class="fa-solid fa-person-chalkboard nav__icon"></i>
+                  <span class="nav__text">Instructor Management</span>
+                </a>
+                <a routerLink="/admin/user-management" class="nav__link" routerLinkActive="active">
+                  <i class='bx bx-user nav__icon'></i>
+                  <span class="nav__text">User Management</span>
+                </a>
+                <a routerLink="/admin/publication-management" class="nav__link" routerLinkActive="active">
+                  <i class="fa-solid fa-rectangle-ad nav__icon"></i>
+                  <span class="nav__text">Publications Management</span>
+                </a>
+                <a routerLink="/admin/room" class="nav__link" routerLinkActive="active">
+                  <i class="fa-solid fa-video nav__icon"></i>
+                  <span class="nav__text">Room</span>
+                </a>
+                <a routerLink="/admin/chat" class="nav__link" routerLinkActive="active">
+                  <i class='bx bx-message-rounded nav__icon'></i>
+                  <span class="nav__text">Chat</span>
+                </a>
+                <a routerLink="/admin/favorites" class="nav__link" routerLinkActive="active">
+                  <i class='bx bx-heart nav__icon'></i>
+                  <span class="nav__text">Favorites</span>
+                </a>
+                <a routerLink="/admin/saved" class="nav__link" routerLinkActive="active">
+                  <i class='bx bx-bookmark nav__icon'></i>
+                  <span class="nav__text">Saved</span>
+                </a>
+              </ul>
+            </div>
+          </nav>
+          
+    </div>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<section class="bg-danger text-center fs-4 p-2 "  *ngIf="!instructorDetails">
+    <p>selectionner un instructor pour afficher leur details</p>
+</section>
+<section class="mt-3" *ngIf="instructorDetails">
+    <button class="btn btn-success"data-bs-toggle="modal" data-bs-target="#updateModal" > update Instructor</button>
+   <div class="profile-container">
+    <div class="cover-photo">
+        <img src="data:image/jpeg;base64,{{instructorDetails.imageCouvertir}}" alt="Photo de couverture">
+    </div>
+    <div class="profile-photo">
+        <img src="data:image/jpeg;base64,{{instructorDetails.imageprofile}}" alt="Photo de profil">
+    </div>
+</div>  
+   <div class="mt-5 d-flex justify-content-between ">
+    <h2 class=" mt-2 fw-bold ms-4">{{instructorDetails.userName}}</h2>
+    <button class=" btn btn-info rounded-5"><i class="fa-brands fa-rocketchat"></i></button>
+   </div>
+<div >
+    <p class="small ms-2">Instructor ID :{{instructorDetails.userID}}</p>
+    <p class="small ms-2">date of register:{{instructorDetails.dateOfRegister | date:'MM/yy/dd' }}</p>
+</div>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" [ngClass]="{'active': isActive === 'about'}"  aria-current="page" (click)="viewAbout()">À propos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"  [ngClass]="{'active': isActive === 'publication'}" (click)="viewPublication()">Publications</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+<div class="container">
+    <section *ngIf="showPublications" class="mt-5">
+        <!-- Placeholder for Publications content -->
+        <h3>Publications</h3>
+        <!-- You can add content related to publications here -->
+    </section>
+    <section *ngIf="showAbout" class="mt-5">
+       <p>       <span class="fw-bold ">Description :</span>
+        {{instructorDetails.description}}</p>
+       <p>        <span class="fw-bold">Email :</span>
+        {{instructorDetails.email}}</p>
+       <p>       <span class="fw-bold">Status :</span>
+        {{instructorDetails.state}}</p>
+       <p><span class="fw-bold">Nombr de course :</span> {{instructorDetails.courses.length}}</p>
+       <p><span class="fw-bold">Nombr de publication :</span> {{instructorDetails.publications.length}}</p>
+    </section>
+</div>
+
+</section>
+
+
+
+<!-- Modal -->
+<div  *ngIf="instructorDetails"  class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="updateModalLabel">Update Instructor</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="userName" class="form-label">User Name</label>
+              <input type="text" class="form-control" id="userName" [(ngModel)]="instructorDetails.userName" name="userName">
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" [(ngModel)]="instructorDetails.email" name="email">
+            </div>
+            <div class="mb-3">
+              <label for="state" class="form-label">State</label>
+              <input type="text" class="form-control" id="state" [(ngModel)]="instructorDetails.state" name="state" disabled>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="text" class="form-control" id="password" [(ngModel)]="instructorDetails.password" name="password" >
+            </div>
+            <div class="mb-3">
+              <label for="role" class="form-label">Role</label>
+              <input type="text" class="form-control" id="role" [(ngModel)]="instructorDetails.role" name="role" disabled>
+            </div>
+            <div class="mb-3">
+              <label for="dateOfRegister" class="form-label">Date of Register</label>
+              <input type="date" class="form-control" id="dateOfRegister" [(ngModel)]="instructorDetails.dateOfRegister" name="dateOfRegister" disabled>
+            </div>
+            <div class="mb-3 text-center">
+              <label for="imageProfile" class="form-label d-block ">Profile Image</label>
+              <img [src]="'data:image/jpeg;base64,' + instructorDetails.imageprofile" class="img-thumbnail w-50 " alt="Profile Image" >
+              <input type="file" class="form-control" id="imageProfile" (change)="onFileSelected($event, 'imageprofile')">
+            </div>
+            <div class="mb-3">
+              <label for="imageCouvertir" class="form-label">Cover Image</label>
+              <img [src]="'data:image/jpeg;base64,' + instructorDetails.imageCouvertir" class="img-thumbnail w-50 " alt="Cover Image">
+              <input type="file" class="form-control" id="imageCouvertir" (change)="onFileSelected($event, 'imageCouvertir')">
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" id="description" [(ngModel)]="instructorDetails.description" name="description"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" (click)="updateInstructor(instructorDetails.userID, instructorDetails)">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>

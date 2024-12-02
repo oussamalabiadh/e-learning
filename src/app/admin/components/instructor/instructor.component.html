@@ -1,0 +1,125 @@
+
+    <div class="row">
+        <div class="col-md-7 " style="border-right: 5px black solid;">
+<div class="d-flex  justify-content-between mt-3">
+    <h2 class=" text-info">Instructors</h2>
+<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#updateModal" >Add Instructors</button>
+</div>
+<div class="row mt-3 inst">
+    <div class="col-md-4" *ngFor="let instructor of instructors"  >
+        <div class="card mb-3 "  (click)="view(instructor)" id="card-{{instructor.userID}}" >
+            <div class="profile-container">
+                <div class="cover-photo">
+                    <img src="data:image/jpeg;base64,{{instructor.imageCouvertir}}" alt="Photo de couverture">
+                </div>
+                <div class="profile-photo">
+                    <img src="data:image/jpeg;base64,{{instructor.imageprofile}}" alt="Photo de profil">
+                </div>
+            </div>          
+              <div class="card-body mt-5">
+<div class="d-flex  justify-content-between">
+    <h3 class="card-title fw-bold ">{{instructor.userName}}</h3>
+    <button class="btn btn-info rounded-5"><i class="fa-brands fa-rocketchat"></i></button>
+</div> 
+<p class="small" >date of register :{{instructor.dateOfRegister | date:'MM/yy/dd'}} </p>
+ 
+              <p class="card-text">{{ truncateText(instructor.description, 5)}}</p>
+            </div>
+          </div>
+    </div>
+    
+</div>
+        </div>
+        <div class="col-md-5 ">
+            <app-instructor-by-id [instructorId]="selectedInstructorId"></app-instructor-by-id>
+        </div>
+    </div>
+
+
+
+
+    <!--update Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="updateModalLabel">Ajouter Instructor </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="registerForm"  class="row g-3">
+                <div class="col-12">
+                  <label for="inputUsername" class="form-label">Username</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="inputUsername"
+                    formControlName="userName"
+                    placeholder="John"
+                  />
+                  <div *ngIf="registerForm.get('userName')?.touched && registerForm.get('userName')?.invalid" class="text-danger">
+                    <small *ngIf="registerForm.get('userName')?.errors?.['required']">Username is required.</small>
+                    <small *ngIf="registerForm.get('userName')?.errors?.['minlength']">Username must be at least 3 characters long.</small>
+                  </div>
+                </div>
+            
+                <div class="col-12">
+                  <label for="inputEmailAddress" class="form-label">Email Address</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="inputEmailAddress"
+                    formControlName="userEmail"
+                    placeholder="example@user.com"
+                  />
+                  <div *ngIf="registerForm.get('userEmail')?.touched && registerForm.get('userEmail')?.invalid" class="text-danger">
+                    <small *ngIf="registerForm.get('userEmail')?.errors?.['required']">Email is required.</small>
+                    <small *ngIf="registerForm.get('userEmail')?.errors?.['email']">Please enter a valid email address.</small>
+                  </div>
+                </div>
+            
+                <div class="col-12">
+                  <label for="inputChoosePassword" class="form-label">Password</label>
+                  <div class="input-group">
+                    <input
+                      [type]="showPassword ? 'text' : 'password'"
+                      class="form-control"
+                      id="inputChoosePassword"
+                      formControlName="userPassword"
+                      placeholder="Enter Password"
+                    />
+                    <div class="input-group-text bg-transparent" (click)="togglePasswordVisibility()">
+                      <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                    </div>
+                  </div>
+                  <div *ngIf="registerForm.get('userPassword')?.touched && registerForm.get('userPassword')?.invalid" class="text-danger">
+                    <small *ngIf="registerForm.get('userPassword')?.errors?.['required']">Password is required.</small>
+                    <small *ngIf="registerForm.get('userPassword')?.errors?.['minlength']">Password must be at least 8 characters long.</small>
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <label for="inputConfirmPassword" class="form-label">Confirm Password</label>
+                  <div class="input-group">
+                    <input
+                      [type]="showPassword ? 'text' : 'password'"
+                      class="form-control"
+                      id="inputConfirmPassword"
+                      formControlName="confirmPassword"
+                      placeholder="Confirm Password"
+                    />
+                   
+                  </div>
+                  <div *ngIf="registerForm.get('confirmPassword')?.touched && !passwordsMatch()" class="text-danger">
+                    <small>Passwords do not match.</small>
+                  </div>
+                </div>
+              </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button (click)="addInstructor()" type="submit" class="btn btn-primary"  [disabled]="registerForm.invalid || !passwordsMatch()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>

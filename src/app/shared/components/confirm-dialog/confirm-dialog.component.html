@@ -1,0 +1,6 @@
+<h2 mat-dialog-title>Confirmation</h2>
+<mat-dialog-content>{{data.message}}</mat-dialog-content>
+<mat-dialog-actions>
+  <button class="btn btn-danger me-2" mat-button (click)="onCancel()">Non</button>
+  <button class="btn btn-success" mat-button (click)="onConfirm()" cdkFocusInitial>Oui</button>
+</mat-dialog-actions>
